@@ -6,18 +6,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
 window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
+    // Get the full query string from URL
+    const queryString = window.location.search;
 
-    // Fixed values
+    // Parse parameters
+    const urlParams = new URLSearchParams(queryString);
+
+    // Dynamic values from URL
+    const amount = urlParams.get("am") || "100";       // Amount
+    const orderId = urlParams.get("tn") || "Payment";  // Order ID
+
+    // Fixed UPI account
     const upiId = "9198433007-2@axl";
     const name = "Jhansi Property";
 
-    // Dynamic values from query string
-    const amount = urlParams.get("am") || "100";
-    const note = urlParams.get("tn") || "Payment";
-
     // Build UPI link
-    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(note)}&cu=INR`;
+    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(orderId)}&cu=INR`;
 
     // Redirect instantly
     window.location.href = upiLink;
@@ -25,9 +29,11 @@ window.onload = function() {
 </script>
 </head>
 <body>
-<p>If payment app does not open automatically, <a id="fallback" href="#">click here</a></p>
+<p>If your UPI app does not open automatically, <a href="#" id="fallback">click here</a></p>
 <script>
-document.getElementById("fallback").href = "upi://pay?pa=9198433007-2@axl&pn=Jhansi%20Property";
+const upiId = "9198433007-2@axl";
+const name = "Jhansi Property";
+document.getElementById("fallback").href = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}`;
 </script>
 </body>
 </html>
