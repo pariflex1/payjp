@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Redirecting to Payment - Jhansi Property</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>
-    window.onload = function () {
-      const urlParams = new URLSearchParams(window.location.search);
+<meta charset="UTF-8">
+<title>Redirecting to Payment - Jhansi Property</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
 
-      // Fixed values
-      const upiId  = "9198433007-2@axl";        // Your UPI ID
-      const name   = "Jhansi Property";         // Your Name
+    // Fixed values
+    const upiId = "9198433007-2@axl";
+    const name = "Jhansi Property";
 
-      // Dynamic values
-      const amount = urlParams.get("am") || "100";     // Amount
-      const note   = urlParams.get("tn") || "Payment"; // Note / Order ID
+    // Dynamic values from query string
+    const amount = urlParams.get("am") || "100";
+    const note = urlParams.get("tn") || "Payment";
 
-      // Build UPI link
-      const upiLink =
-        `upi://pay?pa=${encodeURIComponent(upiId)}` +
-        `&pn=${encodeURIComponent(name)}` +
-        `&am=${encodeURIComponent(amount)}` +
-        `&tn=${encodeURIComponent(note)}` +
-        `&cu=INR`;
+    // Build UPI link
+    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(note)}&cu=INR`;
 
-      // Redirect immediately (0s)
-      window.location.href = upiLink;
-    };
-  </script>
+    // Redirect instantly
+    window.location.href = upiLink;
+};
+</script>
 </head>
 <body>
-  <p>If payment app does not open, <a id="fallback" href="#">click here</a>.</p>
-  <script>
-    // Fallback link
-    document.getElementById("fallback").href =
-      window.location.href.replace(window.location.origin, "upi://pay");
-  </script>
+<p>If payment app does not open automatically, <a id="fallback" href="#">click here</a></p>
+<script>
+document.getElementById("fallback").href = "upi://pay?pa=9198433007-2@axl&pn=Jhansi%20Property";
+</script>
 </body>
 </html>
