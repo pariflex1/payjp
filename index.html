@@ -2,49 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Payment - Maa Pitambra Infraengineer Pvt. Ltd.</title>
+<title>Payment - Jhansi Property</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 body { font-family: Arial, sans-serif; text-align: center; padding: 40px 20px; max-width: 400px; margin: auto; background: #f8f9fa; }
-header { background: #007bff; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-h1 { margin: 0; font-size: 1.5em; }
-.info { background: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 1.1em; }
-.fallback { display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+header { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.company { font-size: 1.3em; font-weight: bold; margin: 5px 0; }
+.location-date { font-size: 1em; opacity: 0.95; }
+.amount { font-size: 2em; color: #28a745; font-weight: bold; margin: 15px 0; }
+.fallback { display: inline-block; background: #28a745; color: white; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 25px; box-shadow: 0 4px 12px rgba(40,167,69,0.3); transition: transform 0.2s; }
+.fallback:hover { transform: scale(1.05); }
+.note { font-size: 0.9em; color: #666; margin-top: 30px; }
 </style>
 <script>
 window.onload = function() {
-    // Get the full query string from URL
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
+    const urlParams = new URLSearchParams(window.location.search);
     const amount = urlParams.get("am") || "100";
     const orderId = urlParams.get("tn") || "Payment";
+    const companyName = urlParams.get("company") || "Jhansi Property";
+    const billDate = urlParams.get("date") || new Date().toLocaleDateString("en-GB");  // Fallback to today
 
-    // Fixed UPI account
+    // Update display elements
+    document.querySelector('.company').textContent = companyName;
+    document.querySelector('.location-date').textContent = `Date: ${billDate}`;
+    document.getElementById("amt").textContent = amount;
+    document.getElementById("order").textContent = orderId;
+
+    // Fixed UPI account (payment receiver stays same)
     const upiId = "9198433007-2@axl";
-    const name = "Jhansi Property";  // Keep existing payee name for UPI
+    const payeeName = "Jhansi Property";  // UPI payee name unchanged
 
-    // Build UPI link
-    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(orderId)}&cu=INR`;
+    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(orderId)}&cu=INR`;
 
-    // Update fallback link
+    // Update fallback
     document.getElementById("fallback").href = upiLink;
 
-    // Redirect instantly on load (with small delay for visibility)
-    setTimeout(() => { window.location.href = upiLink; }, 1500);
+    // Auto-redirect after 2s (shows company/date)
+    setTimeout(() => { window.location.href = upiLink; }, 2000);
 };
 </script>
 </head>
 <body>
-<div class="header">
-<h1>Maa Pitambra Infraengineer Pvt. Ltd.</h1>
-<p class="info">Jhokan Bagh, Jhansi</p>
-<p class="info" id="date">Date: 09-Feb.-2026</p>
-</div>
-<p style="font-size: 1.2em; margin: 20px 0;">Redirecting to UPI Payment (₹<span id="amt"></span>)</p>
-<a href="#" id="fallback" class="fallback">Open UPI App Manually</a>
-<p style="font-size: 0.9em; color: #666; margin-top: 30px;">Supports Google Pay, PhonePe, Paytm & more</p>
-<script>
-document.getElementById("amt").textContent = new URLSearchParams(window.location.search).get("am") || "100";
-</script>
+<header>
+<div class="company">Loading...</div>
+<div class="location-date">Loading...</div>
+</header>
+<p style="font-size: 1.2em; margin: 20px 0;">Pay ₹<span id="amt"></span> for <span id="order"></span></p>
+<a href="#" id="fallback" class="fallback">Open UPI Payment</a>
+<p class="note">Google Pay, PhonePe, Paytm & all UPI apps supported</p>
 </body>
 </html>
