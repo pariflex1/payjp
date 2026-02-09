@@ -1,54 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Payment - Jhansi Property</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body { font-family: Arial, sans-serif; text-align: center; padding: 40px 20px; max-width: 400px; margin: auto; background: #f8f9fa; }
-header { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.company { font-size: 1.3em; font-weight: bold; margin: 5px 0; }
-.location-date { font-size: 1em; opacity: 0.95; }
-.amount { font-size: 2em; color: #28a745; font-weight: bold; margin: 15px 0; }
-.fallback { display: inline-block; background: #28a745; color: white; padding: 18px 40px; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 25px; box-shadow: 0 4px 12px rgba(40,167,69,0.3); transition: transform 0.2s; }
-.fallback:hover { transform: scale(1.05); }
-.note { font-size: 0.9em; color: #666; margin-top: 30px; }
-</style>
-<script>
-window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const amount = urlParams.get("am") || "100";
-    const orderId = urlParams.get("tn") || "Payment";
-    const companyName = urlParams.get("company") || "Jhansi Property";
-    const billDate = urlParams.get("date") || new Date().toLocaleDateString("en-GB");  // Fallback to today
-
-    // Update display elements
-    document.querySelector('.company').textContent = companyName;
-    document.querySelector('.location-date').textContent = `Date: ${billDate}`;
-    document.getElementById("amt").textContent = amount;
-    document.getElementById("order").textContent = orderId;
-
-    // Fixed UPI account (payment receiver stays same)
-    const upiId = "9198433007-2@axl";
-    const payeeName = "Jhansi Property";  // UPI payee name unchanged
-
-    const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(payeeName)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(orderId)}&cu=INR`;
-
-    // Update fallback
-    document.getElementById("fallback").href = upiLink;
-
-    // Auto-redirect after 2s (shows company/date)
-    setTimeout(() => { window.location.href = upiLink; }, 2000);
-};
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPI Payment Link Generator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px; 
+        }
+        .container { 
+            max-width: 500px; margin: 0 auto; background: white; 
+            border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .form-group { margin-bottom: 25px; position: relative; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        input { 
+            width: 100%; padding: 15px; border: 2px solid #e1e5e9; 
+            border-radius: 12px; font-size: 16px; transition: all 0.3s;
+        }
+        input:focus { outline: none; border-color: #28a745; box-shadow: 0 0 0 3px rgba(40,167,69,0.1); }
+        .bill-prefix { 
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+            color: #28a745; font-weight: bold; background: white; padding: 0 5px;
+            pointer-events: none; font-size: 14px;
+        }
+        .generate-btn { 
+            width: 100%; background: #28a745; color: white; border: none; 
+            padding: 18px; border-radius: 12px; font-size: 18px; font-weight: bold; 
+            cursor: pointer; transition: all 0.3s;
+        }
+        .generate-btn:hover { background: #218838; transform: translateY(-2px); }
+        .result { 
+            margin-top: 30px; padding: 25px; background: #d4edda; 
+            border-radius: 12px; border-left: 5px solid #28a745; display: none;
+        }
+        .upi-link { 
+            background: #f8f9fa; padding: 20px; border-radius: 10px; 
+            word-break: break-all; font-family: monospace; font-size: 14px;
+            margin: 15px 0; border: 2px solid #28a745; cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upi-link:hover { background: #e9ecef; transform: scale(1.02); }
+        .copy-btn { 
+            background: #007bff; color: white; border: none; padding: 12px 24px; 
+            border-radius: 8px; cursor: pointer; font-size: 14px; float: right;
+        }
+        .test-mobile { 
+            background: #ffc107; color: #212529; border: none; padding: 12px 24px; 
+            border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px;
+            display: block; width: 100%;
+        }
+        .preview { 
+            margin-top: 20px; padding: 15px; background: white; 
+            border-radius: 8px; border: 1px solid #dee2e6;
+        }
+    </style>
 </head>
 <body>
-<header>
-<div class="company">Loading...</div>
-<div class="location-date">Loading...</div>
-</header>
-<p style="font-size: 1.2em; margin: 20px 0;">Pay ₹<span id="amt"></span> for <span id="order"></span></p>
-<a href="#" id="fallback" class="fallback">Open UPI Payment</a>
-<p class="note">Google Pay, PhonePe, Paytm & all UPI apps supported</p>
-</body>
-</html>
+    <div class="container">
+        <h1>🚀 UPI Payment Generator</h1>
+        
+        <form id="paymentForm">
+            <div class="form-group">
+                <label>💰 Amount (₹)</label>
+                <input type="number" id="amount" placeholder="Amount" min="1" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label>🏢 Company Name</label>
+                <input type="text" id="company" placeholder="Company Name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Date</label>
+                <input type="date" id="date" required>
+            </div>
+            
+            <div class="form-group">
+                <label>🔢 Bill Number <small>(Type 01 → Auto BILL_01)</small></label>
+                <div style="position: relative;">
+                    <input type="text" id="billId" placeholder="Bill Number" maxlength="10">
+                    <span class="bill-prefix">BILL_</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="generate-btn">✨ Generate UPI Link</button>
+        </form>
+        
+        <div id="result" class="result">
+            <h3>✅ Ready to Share!</h3>
+            <div class="upi-link" id="paymentLink" onclick="testMobileRedirect()">
+                Click to test (Mobile: Opens UPI)
+            </div>
+            <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+            <button class="test-mobile" onclick="testMobileRedirect()">📱 Test Mobile Redirect</button>
+            <div class="preview" id="preview"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Auto Bill ID formatting
+        document.getElementById('billId').addEventListener('input', function(e) {
+            let value = e.target.value.trim();
+            // Remove non-digits
+            value = value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const amount = document.getElementById('amount').value;
+            const company = encodeURIComponent(document.getElementById('company').value);
+            const date = document.getElementById('date').value;
+            const billNum = document.getElementById('billId').value.trim();
+            
+            // Auto convert: 01 → BILL_01, 123 → BILL_123
+            const billId = billNum ? `BILL_${billNum.padStart(3, '0')}` : 'BILL_001';
+            
+            const baseUrl = 'https://pay.jhansiproperty.com/';
+            const params = `?am=${amount}&tn=${billId}&company=${company}&date=${date}`;
+            const fullLink = baseUrl + params;
+            
+            document.getElementById('paymentLink').textContent = fullLink;
+            document.getElementById('paymentLink').dataset.link = fullLink;
+            
+            document.getElementById('preview').innerHTML = `
+                <strong>📋 Preview:</strong><br>
+                🏢 ${decodeURIComponent(company)}<br>
+                📅 ${date}<br>
+                💰 ₹${amount}<br>
+                📄 ${billId}
+            `;
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function copyLink() {
+            const link = docu
