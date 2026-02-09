@@ -2,38 +2,49 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Redirecting to Payment - Jhansi Property</title>
+<title>Payment - Maa Pitambra Infraengineer Pvt. Ltd.</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial, sans-serif; text-align: center; padding: 40px 20px; max-width: 400px; margin: auto; background: #f8f9fa; }
+header { background: #007bff; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+h1 { margin: 0; font-size: 1.5em; }
+.info { background: #e9ecef; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 1.1em; }
+.fallback { display: inline-block; background: #28a745; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+</style>
 <script>
 window.onload = function() {
     // Get the full query string from URL
     const queryString = window.location.search;
-
-    // Parse parameters
     const urlParams = new URLSearchParams(queryString);
-
-    // Dynamic values from URL
-    const amount = urlParams.get("am") || "100";       // Amount
-    const orderId = urlParams.get("tn") || "Payment";  // Order ID
+    const amount = urlParams.get("am") || "100";
+    const orderId = urlParams.get("tn") || "Payment";
 
     // Fixed UPI account
     const upiId = "9198433007-2@axl";
-    const name = "Jhansi Property";
+    const name = "Jhansi Property";  // Keep existing payee name for UPI
 
     // Build UPI link
     const upiLink = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(amount)}&tn=${encodeURIComponent(orderId)}&cu=INR`;
 
-    // Redirect instantly
-    window.location.href = upiLink;
+    // Update fallback link
+    document.getElementById("fallback").href = upiLink;
+
+    // Redirect instantly on load (with small delay for visibility)
+    setTimeout(() => { window.location.href = upiLink; }, 1500);
 };
 </script>
 </head>
 <body>
-<p>If your UPI app does not open automatically, <a href="#" id="fallback">click here</a></p>
+<div class="header">
+<h1>Maa Pitambra Infraengineer Pvt. Ltd.</h1>
+<p class="info">Jhokan Bagh, Jhansi</p>
+<p class="info" id="date">Date: 09-Feb.-2026</p>
+</div>
+<p style="font-size: 1.2em; margin: 20px 0;">Redirecting to UPI Payment (₹<span id="amt"></span>)</p>
+<a href="#" id="fallback" class="fallback">Open UPI App Manually</a>
+<p style="font-size: 0.9em; color: #666; margin-top: 30px;">Supports Google Pay, PhonePe, Paytm & more</p>
 <script>
-const upiId = "9198433007-2@axl";
-const name = "Jhansi Property";
-document.getElementById("fallback").href = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent(name)}`;
+document.getElementById("amt").textContent = new URLSearchParams(window.location.search).get("am") || "100";
 </script>
 </body>
 </html>
